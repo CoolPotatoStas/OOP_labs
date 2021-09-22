@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView fx:id="myTab" fixedCellSize="20.0" layoutX="9.0" layoutY="7.0" prefHeight="387.0" prefWidth="586.0">
+        <columns>
+          <TableColumn fx:id="Lang" prefWidth="120.800048828125" text="Язык" />
+          <TableColumn fx:id="Author" prefWidth="306.39996337890625" text="Автор" />
+            <TableColumn fx:id="Year" prefWidth="158.4000244140625" text="Год" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
