@@ -4,16 +4,15 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
-
+<?import javafx.scene.media.MediaView?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="654.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
    <children>
-      <ToggleButton fx:id="playPause" layoutX="81.0" layoutY="471.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="52.0" />
+      <ToggleButton fx:id="playPause" layoutX="74.0" layoutY="471.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="52.0" />
       <ToggleButton fx:id="StopPlay" layoutX="14.0" layoutY="471.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="52.0" />
       <Label fx:id="titleOfSong" layoutX="156.0" layoutY="452.0" prefHeight="19.0" prefWidth="200.0" text="Название:" />
       <Slider fx:id="Volue" layoutX="406.0" layoutY="482.0" prefHeight="19.0" prefWidth="190.0" />
@@ -38,6 +37,11 @@
         </menus>
       </MenuBar>
       <ImageView fx:id="usImage" fitHeight="396.0" fitWidth="630.0" layoutX="14.0" layoutY="43.0" pickOnBounds="true" preserveRatio="true" />
-      <ProgressBar fx:id="progress" layoutX="156.0" layoutY="484.0" prefWidth="200.0" progress="0.0" />
+      <AnchorPane layoutX="156.0" layoutY="470.0" prefHeight="10.0" prefWidth="200.0" style="-fx-background-color: #1F1F1F;">
+         <children>
+            <MediaView fx:id="medView" fitHeight="20.0" fitWidth="200.0" layoutY="3.0" />
+         </children>
+      </AnchorPane>
+      <Slider fx:id="begMus" layoutX="160.0" layoutY="501.0" prefHeight="19.0" prefWidth="190.0" />
    </children>
 </AnchorPane>

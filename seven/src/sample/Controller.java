@@ -1,9 +1,12 @@
 package sample;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -43,6 +46,10 @@ public class Controller {
     private ImageView usImage;
 
     @FXML
+    private Slider begMus;
+
+
+    @FXML
     private MediaView medView;
     private Duration d;
     private Media media;
@@ -50,6 +57,13 @@ public class Controller {
     private boolean flag;
     @FXML
     void initialize() {
+        medView = new MediaView();
+        File file = new File("C:/Users/ptich/Desktop/ptest_music.mp3");
+        URI uri = file.toURI();
+        media = new Media(uri.toString());
+        mplayer = new MediaPlayer(media);
+
+
         ToggleGroup togGr = new ToggleGroup();
         playPause.setToggleGroup(togGr);
         ImageView image = new ImageView(new Image("/sample/play.png"));
@@ -97,21 +111,45 @@ public class Controller {
             public void handle(ActionEvent actionEvent) {
                 FileChooser fileChooser = new FileChooser();//Класс работы с диалогом выборки и сохранения
                 fileChooser.setTitle("Save Document");//Заголовок диалога
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");//Расширение
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP4 files (*.mp4)", "*.mp4");//Расширение
                 fileChooser.getExtensionFilters().add(extFilter);
-                File file = fileChooser.showSaveDialog(Main.prim);
+                File file = fileChooser.showOpenDialog(Main.prim);
+                URI uri = file.toURI();
                 if (file != null) {
+                    media = new Media(uri.toString());
                     titleOfSong.setText("Да");
-                    //открытие музычки
                     mplayer = new MediaPlayer(media);
                     medView.setMediaPlayer(mplayer);
+                    mplayer.setVolume(0);
                 }
             }
         });
 
         //////////////////////////
 
+        Volue.valueProperty().addListener(new ChangeListener<Number>(){
 
+            public void changed(ObservableValue<? extends Number> changed, Number oldValue, Number newValue){
+                mplayer.setVolume(Volue.getValue());
+            }
+        });
+
+        mplayer.currentTimeProperty().addListener(ov -> {
+            if (!begMus.isValueChanging()) {
+                double total = mplayer.getTotalDuration().toMillis();
+                double current = mplayer.getCurrentTime().toMillis();
+                begMus.setMax(total);
+                begMus.setValue(current);
+                //lbTime.setTextFill(Color.RED);
+                //lbTime.setText(getTimeString(current) + "/" + getTimeString(total));
+            }
+        });
+
+        begMus.valueProperty().addListener(ov -> {
+            if (begMus.isValueChanging()) {
+                mplayer.seek(new Duration(begMus.getValue()));
+            }
+        });
     }
 }
 

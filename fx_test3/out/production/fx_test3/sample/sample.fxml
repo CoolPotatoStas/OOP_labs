@@ -101,10 +101,10 @@
             </VBox>
          </children>
       </AnchorPane>
-      <AnchorPane layoutY="27.0" prefHeight="428.0" prefWidth="406.0">
+      <AnchorPane fx:id="canAncPane" layoutY="27.0" prefHeight="428.0" prefWidth="406.0" style="-fx-background-color: #000000;">
          <children>
-            <Rectangle fx:id="Fon" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="370.0" layoutX="14.0" layoutY="14.0" stroke="BLACK" strokeType="INSIDE" width="370.0" />
-            <Canvas fx:id="myCanvas" height="370.0" layoutX="14.0" layoutY="14.0" width="370.0" />
+            <Rectangle fx:id="Fon" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="405.0" layoutX="-3.0" stroke="WHITE" strokeType="INSIDE" width="406.0" />
+            <Canvas fx:id="myCanvas" height="405.0" width="406.0" />
          </children></AnchorPane>
    </children>
 </AnchorPane>

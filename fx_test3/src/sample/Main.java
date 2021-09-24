@@ -12,6 +12,7 @@ import java.net.URL;
 public class Main extends Application {
 
     public static Stage prim;
+    public static Scene sc;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -19,7 +20,8 @@ public class Main extends Application {
         URL url = new File("src/sample/sample.fxml").toURI().toURL();
         Parent root = FXMLLoader.load(url);
         primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root));
+        sc = new Scene(root);
+        primaryStage.setScene(sc);
         primaryStage.show();
     }
 

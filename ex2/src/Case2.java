@@ -23,7 +23,8 @@ public class Case2 extends Application {
         r.setWidth(100);
         r.setHeight(100);
         r.setStroke(Color.BLACK);
-
+//рнадомная фигура
+        //изменение размеров
         r.setStyle("-fx-background-color: transparent;");
         r.setFill(Color.WHITE);
 

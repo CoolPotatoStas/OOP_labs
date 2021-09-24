@@ -1,5 +1,5 @@
 package sample;
-
+//добавить тип штриха и все пучком
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +18,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.*;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
@@ -73,14 +75,22 @@ public class Controller {
     private MenuItem butSave;
 
     @FXML
+    private AnchorPane canAncPane;
+
+    @FXML
     private Canvas myCanvas;
     boolean flag = false;
     double x, y;
+    GraphicsContext gc;
+    boolean k = false;
+
+    Color zal;
+    Color cont;
+    double tolsh = 1;
 
     @FXML
     void initialize() {
-        GraphicsContext gc = myCanvas.getGraphicsContext2D();
-
+        gc = myCanvas.getGraphicsContext2D();
         Shirina.setOnAction(new EventHandler<ActionEvent>(){
 
             @Override
@@ -118,18 +128,18 @@ public class Controller {
         });
 
         Tolshina.setOnAction(new EventHandler<ActionEvent>(){
-
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (!Tolshina.getText().isEmpty()){
                     String text = Tolshina.getText();
                     double count = Double.parseDouble(text);
-                    if (count > 0 && count < 50){
-                        gc.setLineWidth(count);
+                    if (count > 0 && count <= 10){
+                        tolsh = count;
                     }
                 }
             }
         });
+
 ///////////////
         ImageView forOne = new ImageView(new Image("sample/Line.png"));
         PalBut1.graphicProperty().setValue(forOne);
@@ -149,22 +159,28 @@ public class Controller {
 //////////////
         Contur.getItems().addAll(langs1);
         Contur.setValue("Черный");
+        cont = Color.BLACK;
         Contur.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent actionEvent) {
                 String text = Contur.getValue();
-                if (text.equals("Черный")){
-                    gc.setStroke(Color.BLACK);
+                if (text.equals("Черный")){ //setStroleWidht + изменение цвета через Chooser + фокус
+                    //gc.setStroke(Color.BLACK);
+                    cont = Color.BLACK;
                 } else if (text.equals("Красный")){
-                    gc.setStroke(Color.RED);
+                    //gc.setStroke(Color.RED);
+                    cont = Color.RED;
                 } else if (text.equals("Синий")){
-                    gc.setStroke(Color.BLUE);
+                    //gc.setStroke(Color.BLUE);
+                    cont = Color.BLUE;
                 } else if (text.equals("Желтый")){
-                    gc.setStroke(Color.YELLOW);
+                    //gc.setStroke(Color.YELLOW);
+                    cont = Color.YELLOW;
                 }
             }
         });
 
+        zal = Color.BLACK;
         Zalivka.getItems().addAll(langs1);
         Zalivka.setValue("Черный");
         Zalivka.setOnAction(new EventHandler<ActionEvent>(){
@@ -172,13 +188,17 @@ public class Controller {
             public void handle(ActionEvent actionEvent) {
                 String text = Zalivka.getValue();
                 if (text.equals("Черный")){
-                    gc.setFill(Color.BLACK);
+                    //gc.setFill(Color.BLACK);
+                    zal = Color.BLACK;
                 } else if (text.equals("Красный")){
-                    gc.setFill(Color.RED);
+                    //gc.setFill(Color.RED);
+                    zal = Color.RED;
                 } else if (text.equals("Синий")){
-                    gc.setFill(Color.BLUE);
+                    //gc.setFill(Color.BLUE);
+                    zal = Color.BLUE;
                 } else if (text.equals("Желтый")){
-                    gc.setFill(Color.YELLOW);
+                    //gc.setFill(Color.YELLOW);
+                    zal = Color.YELLOW;
                 }
             }
         });
@@ -190,16 +210,15 @@ public class Controller {
             public void handle(ActionEvent actionEvent) {
                 String text = TypeOfContur.getValue();
                 if (text.equals("Обычный")){
-                    gc.setLineDashes(0);
+                    //gc.setLineDashes(0);
                 } else if (text.equals("Штрих")){
-                    gc.setLineDashes(5, 5);
+                    //gc.setLineDashes(5, 5);
                 } else if (text.equals("Точка")){
-                    gc.setLineDashes(1, 3);
+                    //gc.setLineDashes(1, 3);
                 }
             }
         });
 //////////////
-
 
         myCanvas.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>(){
             @Override
@@ -218,16 +237,216 @@ public class Controller {
             public void handle(MouseEvent event) {
                 if (flag) {
                     if (PalBut1.isSelected()) {
-                        gc.strokeLine(x - 20, y - 20, x + 20, y + 20);
+                        k = true;
+                        //Rectangle r = new Rectangle();
+                        //r.setX(x - 25);
+                        //r.setY(y - 25);
+                        //r.setHeight(50);
+                        //r.setWidth(50);
+                        //r.setStroke(Color.BLACK);
+                        //r.setStyle("-fx-background-color: transparent;");
+                        //r.setFill(Color.WHITE);
+                        //canAncPane.getChildren().add(r);
+                        Line l = new Line(x - 20, y - 20, x + 20, y + 20);
+                        l.setStroke(cont);
+                        l.setStrokeWidth(tolsh);
+                        canAncPane.getChildren().add(l);
+
+                        Main.sc.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                            @Override
+                            public void handle(KeyEvent keyEvent) {
+                                if (k){
+                                    if (keyEvent.getCode() == KeyCode.ADD) {//&& (r.getHeight() + 5 < 300)
+                                        //r.setHeight(r.getHeight() + 10);
+                                        //r.setLayoutY(r.getLayoutY() - 5);
+                                        //r.setWidth(r.getWidth() + 10);
+                                        //r.setLayoutX(r.getLayoutX() - 5);
+                                        l.setStartX(l.getStartX() - 5);
+                                        l.setStartY(l.getStartY() - 5);
+                                        l.setEndX(l.getEndX() + 5);
+                                        l.setEndY(l.getEndY() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.SUBTRACT) {//&& (r.getHeight() - 5 > (2*c.getRadius()+5)
+                                        //r.setHeight(r.getHeight() - 10);
+                                        //r.setLayoutY(r.getLayoutY() + 5);
+                                        //r.setWidth(r.getWidth() - 10);
+                                        //r.setLayoutX(r.getLayoutX() + 5);
+                                        l.setStartX(l.getStartX() + 5);
+                                        l.setStartY(l.getStartY() + 5);
+                                        l.setEndX(l.getEndX() - 5);
+                                        l.setEndY(l.getEndY() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.D) {
+                                        l.setLayoutX(l.getLayoutX() + 5);
+                                        //r.setLayoutX(r.getLayoutX() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.A) {
+                                        l.setLayoutX(l.getLayoutX() - 5);
+                                        //r.setLayoutX(r.getLayoutX() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.W) {
+                                        l.setLayoutY(l.getLayoutY() - 5);
+                                        //r.setLayoutY(r.getLayoutY() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.S) {
+                                        l.setLayoutY(l.getLayoutY() + 5);
+                                        //r.setLayoutY(r.getLayoutY() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.G) {
+                                        //r.setFill(Color.WHITE);
+                                        //canAncPane.getChildren().remove(r);
+                                        k = false;
+                                    }
+                                }
+                            }
+                        });
+                        if (!k){
+                            Main.sc.setOnKeyPressed(null);
+                        }
                     } else if (PalBut2.isSelected()) {
-                        //gc.fillOval(x, y, 40, 40);
-                        Circle c = new Circle(20);
-                        c.setLayoutX(x);
-                        c.setLayoutY(y);
+                        k = true;
+
+                        Circle l = new Circle();
+                        l.setCenterX(x);
+                        l.setCenterY(y);
+                        l.setRadius(10);
+                        l.setStroke(cont);
+                        l.setFill(zal);
+                        l.setStrokeWidth(tolsh);
+                        canAncPane.getChildren().add(l);
+
+                        Main.sc.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                            @Override
+                            public void handle(KeyEvent keyEvent) {
+                                if (k){
+                                    if (keyEvent.getCode() == KeyCode.ADD) {//&& (r.getHeight() + 5 < 300)
+                                        l.setRadius(l.getRadius() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.SUBTRACT) {//&& (r.getHeight() - 5 > (2*c.getRadius()+5)
+
+                                        l.setRadius(l.getRadius() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.D) {
+                                        l.setLayoutX(l.getLayoutX() + 5);
+
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.A) {
+                                        l.setLayoutX(l.getLayoutX() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.W) {
+                                        l.setLayoutY(l.getLayoutY() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.S) {
+                                        l.setLayoutY(l.getLayoutY() + 5);
+
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.G) {
+
+                                        k = false;
+                                    }
+                                }
+                            }
+                        });
+                        if (!k){
+                            Main.sc.setOnKeyPressed(null);
+                        }
                     } else if (PalBut3.isSelected()) {
-                        gc.fillOval(x, y, 60, 30);
+                        k = true;
+
+                        Ellipse l = new Ellipse();
+                        l.setCenterX(x);
+                        l.setCenterY(y);
+                        l.setRadiusX(20);
+                        l.setRadiusY(10);
+                        l.setStroke(cont);
+                        l.setFill(zal);
+                        l.setStrokeWidth(tolsh);
+                        canAncPane.getChildren().add(l);
+
+                        Main.sc.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                            @Override
+                            public void handle(KeyEvent keyEvent) {
+                                if (k){
+                                    if (keyEvent.getCode() == KeyCode.ADD) {//&& (r.getHeight() + 5 < 300)
+
+                                        l.setRadiusX(l.getRadiusX() + 5);
+                                        l.setRadiusY(l.getRadiusY() + 2.5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.SUBTRACT) {//&& (r.getHeight() - 5 > (2*c.getRadius()+5)
+
+                                        l.setRadiusX(l.getRadiusX() - 5);
+                                        l.setRadiusY(l.getRadiusY() - 2.5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.D) {
+                                        l.setLayoutX(l.getLayoutX() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.A) {
+                                        l.setLayoutX(l.getLayoutX() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.W) {
+                                        l.setLayoutY(l.getLayoutY() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.S) {
+                                        l.setLayoutY(l.getLayoutY() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.G) {
+                                        k = false;
+                                    }
+                                }
+                            }
+                        });
+                        if (!k){
+                            Main.sc.setOnKeyPressed(null);
+                        }
                     } else if (PalBut4.isSelected()){
-                        gc.fillRect(x, y, 40, 40);
+                        k = true;
+                        Rectangle l = new Rectangle();
+                        l.setHeight(25);
+                        l.setWidth(25);
+                        l.setX(x - 11.625);
+                        l.setY(y - 11.625);
+                        l.setStroke(cont);
+                        l.setFill(zal);
+                        l.setStrokeWidth(tolsh);
+                        canAncPane.getChildren().add(l);
+
+                        Main.sc.setOnKeyPressed(new EventHandler<KeyEvent>() {
+                            @Override
+                            public void handle(KeyEvent keyEvent) {
+                                if (k){
+                                    if (keyEvent.getCode() == KeyCode.ADD) {
+                                        l.setHeight(l.getHeight() + 10);
+                                        l.setLayoutY(l.getLayoutY() - 5);
+                                        l.setWidth(l.getWidth() + 10);
+                                        l.setLayoutX(l.getLayoutX() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.SUBTRACT) {
+                                        l.setHeight(l.getHeight() - 10);
+                                        l.setLayoutY(l.getLayoutY() + 5);
+                                        l.setWidth(l.getWidth() - 10);
+                                        l.setLayoutX(l.getLayoutX() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.D) {
+                                        l.setLayoutX(l.getLayoutX() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.A) {
+                                        l.setLayoutX(l.getLayoutX() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.W) {
+                                        l.setLayoutY(l.getLayoutY() - 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.S) {
+                                        l.setLayoutY(l.getLayoutY() + 5);
+                                    }
+                                    if (keyEvent.getCode() == KeyCode.G) {
+                                        k = false;
+                                    }
+                                }
+                            }
+                        });
+                        if (!k){
+                            Main.sc.setOnKeyPressed(null);
+                        }
                     }
                     gc.stroke();
                     gc.closePath();
@@ -237,7 +456,6 @@ public class Controller {
         });
 
 //////////////////////
-        gc.setFill(Color.BLACK);
         butSave.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent actionEvent) {
@@ -248,8 +466,8 @@ public class Controller {
                 File file = fileChooser.showSaveDialog(Main.prim);
                 if (file != null) {
                     try {
-                        WritableImage writableImage = new WritableImage(360, 360);
-                        myCanvas.snapshot(null, writableImage);
+                        WritableImage writableImage = new WritableImage((int)myCanvas.getWidth(), (int)myCanvas.getHeight());
+                        canAncPane.snapshot(null, writableImage);
                         RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                         ImageIO.write(renderedImage, "png", file);
                     } catch (IOException ex) {

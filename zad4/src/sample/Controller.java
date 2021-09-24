@@ -62,7 +62,7 @@ public class Controller {
     ArrayList<ObservableList<XYChart.Data> > datas = new ArrayList(); //
     @FXML
     void initialize() {
-
+        lineFun.setCreateSymbols(false);
         ObservableList<String> langs1 = FXCollections.observableArrayList();
         langs1.add("<...>");
         langs1.add("y = cos(x)");
@@ -139,25 +139,22 @@ public class Controller {
                 if (ind != -1){
                     if (infoFun[ind]){
                         infoFun[ind] = false;
-                        ObservableList<XYChart.Data> tmp = FXCollections.observableArrayList();
-                        //доделать
+                        lineFun.getData().remove(series.get(ind));
                     }
                 }
             }
         });
 
         /////////////////////////////
-
-       /* Shir.setOnAction(new EventHandler<ActionEvent>(){
+//изменять толищну через css
+        /*Shir.setOnAction(new EventHandler<ActionEvent>(){ //нет редактора для изменения толщины линий
             @Override
             public void handle(ActionEvent actionEvent) {
                 if (!Shir.getText().isEmpty()){
                     String text = Shir.getText();
                     double count = Double.parseDouble(text);
                     if (count >= 10 && count <= 100){
-                        NumY.setAutoRanging(false);
-                        NumY.setLowerBound((-count/2) - 1);
-                        NumY.setUpperBound((count/2) + 1);
+
                     }
                 }
             }
@@ -176,7 +173,7 @@ public class Controller {
                     double count = Double.parseDouble(text);
                     if (count >= -50 && count <= 50 && count < (maximum+1)){
                         NumX.setAutoRanging(false);
-                        NumX.setLowerBound(minimum);
+                        NumX.setLowerBound(count);
                         minimum = count;
                     }
                 }
@@ -191,7 +188,7 @@ public class Controller {
                     double count = Double.parseDouble(text);
                     if (count >= -50 && count <= 50 && count > (minimum+1)){
                         NumX.setAutoRanging(false);
-                        NumX.setUpperBound(maximum);
+                        NumX.setUpperBound(count);
                         maximum = count;
                     }
                 }
