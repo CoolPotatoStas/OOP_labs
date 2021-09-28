@@ -18,12 +18,6 @@ import java.util.ArrayList;
 
 public class Controller {
 
-    //@FXML
-   // private ResourceBundle resources;
-
-    //@FXML
-    //private URL location;
-
     @FXML
     private TextArea Output;
 
@@ -53,13 +47,12 @@ public class Controller {
     @FXML
     private NumberAxis NumX;
 
-    //@FXML
-    //private NumberAxis NumY;
-
     private boolean[] infoFun = new boolean[4];
+    private int[] infoPoz = new int[4];
     private int ind = -1;
     ArrayList<XYChart.Series> series = new ArrayList();
-    ArrayList<ObservableList<XYChart.Data> > datas = new ArrayList(); //
+    ArrayList<ObservableList<XYChart.Data> > datas = new ArrayList();
+
     @FXML
     void initialize() {
         lineFun.setCreateSymbols(false);
@@ -147,18 +140,20 @@ public class Controller {
 
         /////////////////////////////
 //изменять толищну через css
-        /*Shir.setOnAction(new EventHandler<ActionEvent>(){ //нет редактора для изменения толщины линий
+        Shir.setOnAction(new EventHandler<ActionEvent>(){ //нет редактора для изменения толщины линий
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (!Shir.getText().isEmpty()){
+                if (!Shir.getText().isEmpty() && ind != -1){
                     String text = Shir.getText();
                     double count = Double.parseDouble(text);
-                    if (count >= 10 && count <= 100){
-
+                    if (count >= 1 && count <= 15){
+                        int i = lineFun.getData().lastIndexOf(series.get(ind));
+                        //доделать, связать порядок добавленных функций с их номером на графике
+                        lineFun.lookup(".default-color" + i +".chart-series-line").setStyle("-fx-stroke-width: " + count + "px;");
                     }
                 }
             }
-        });*/
+        });
 
         //////////////////////////////////////
 

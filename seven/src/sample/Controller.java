@@ -55,6 +55,24 @@ public class Controller {
     private Media media;
     private MediaPlayer mplayer;
     private boolean flag;
+
+    void newListn(){
+        mplayer.currentTimeProperty().addListener(ov -> {
+            if (!begMus.isValueChanging()) {
+                double total = mplayer.getTotalDuration().toMillis();
+                double current = mplayer.getCurrentTime().toMillis();
+                begMus.setMax(total);
+                begMus.setValue(current);
+            }
+        });
+
+        begMus.valueProperty().addListener(ov -> {
+            if (begMus.isValueChanging()) {
+                mplayer.seek(new Duration(begMus.getValue()));
+            }
+        });
+    }
+
     @FXML
     void initialize() {
         medView = new MediaView();
@@ -62,7 +80,9 @@ public class Controller {
         URI uri = file.toURI();
         media = new Media(uri.toString());
         mplayer = new MediaPlayer(media);
+        titleOfSong.setText(file.getName());
 
+        ////////////////////////////////////////////
 
         ToggleGroup togGr = new ToggleGroup();
         playPause.setToggleGroup(togGr);
@@ -100,6 +120,7 @@ public class Controller {
                 if (media != null){
                     flag = false;
                     mplayer.stop();
+                    begMus.setValue(0);
                 }
             }
         });
@@ -111,45 +132,36 @@ public class Controller {
             public void handle(ActionEvent actionEvent) {
                 FileChooser fileChooser = new FileChooser();//Класс работы с диалогом выборки и сохранения
                 fileChooser.setTitle("Save Document");//Заголовок диалога
-                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP4 files (*.mp4)", "*.mp4");//Расширение
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("MP3 files (*.mp3)", "*.mp3");//Расширение
                 fileChooser.getExtensionFilters().add(extFilter);
                 File file = fileChooser.showOpenDialog(Main.prim);
-                URI uri = file.toURI();
                 if (file != null) {
+                    URI uri = file.toURI();
                     media = new Media(uri.toString());
-                    titleOfSong.setText("Да");
+                    titleOfSong.setText(file.getName());
+                    begMus.setValue(begMus.getMin());
+                    mplayer.stop();
                     mplayer = new MediaPlayer(media);
                     medView.setMediaPlayer(mplayer);
-                    mplayer.setVolume(0);
+                    playPause.setSelected(false);
+                    flag = false;
+                    mplayer.setVolume(Volue.getValue()/100);
+                    newListn();
                 }
             }
         });
 
         //////////////////////////
-
-        Volue.valueProperty().addListener(new ChangeListener<Number>(){
-
-            public void changed(ObservableValue<? extends Number> changed, Number oldValue, Number newValue){
-                mplayer.setVolume(Volue.getValue());
+        Volue.setMax(100);
+        Volue.setMin(0);
+        mplayer.setVolume(0.15);
+        Volue.valueProperty().addListener(ov ->{
+            if (Volue.isValueChanging()){
+                mplayer.setVolume(Volue.getValue()/100);
             }
         });
 
-        mplayer.currentTimeProperty().addListener(ov -> {
-            if (!begMus.isValueChanging()) {
-                double total = mplayer.getTotalDuration().toMillis();
-                double current = mplayer.getCurrentTime().toMillis();
-                begMus.setMax(total);
-                begMus.setValue(current);
-                //lbTime.setTextFill(Color.RED);
-                //lbTime.setText(getTimeString(current) + "/" + getTimeString(total));
-            }
-        });
-
-        begMus.valueProperty().addListener(ov -> {
-            if (begMus.isValueChanging()) {
-                mplayer.seek(new Duration(begMus.getValue()));
-            }
-        });
+        newListn();
     }
 }
 

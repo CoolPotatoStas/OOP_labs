@@ -1,27 +1,15 @@
 package sample;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 
 public class Controller {
-
-    @FXML
-    private ResourceBundle resources;
-
-    @FXML
-    private URL location;
 
     @FXML
     private TableView<Book> myTab;
@@ -49,6 +37,9 @@ public class Controller {
 
     @FXML
     private TextField newYear;
+
+    @FXML
+    private CheckBox butGetAll;
 
     ObservableList<Book> Books = FXCollections.observableArrayList(
             new Book("Си", "Деннис Ритчи", "1972"),
@@ -114,7 +105,12 @@ public class Controller {
         butAdd.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                if (newLang.getText() != null && newAut.getText() != null && newYear.getText() != null){
+                String one = newLang.getText().toString();
+                String two = newAut.getText().toString();
+                String three = newYear.getText().toString();
+                if (newLang.getText() != null && !one.isEmpty() && newAut.getText() != null
+                        && !two.isEmpty() && newYear.getText() != null && !three.isEmpty()){
+
                     Books.add(new Book(newLang.getText(),newAut.getText(),newYear.getText()));
                     newLang.setText(null);
                     newAut.setText(null);
@@ -127,17 +123,13 @@ public class Controller {
         butDel.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) { //удаление по выбору строки
-                if (newLang.getText() != null && newAut.getText() != null && newYear.getText() != null){
-                    Book x = new Book(newLang.getText(),newAut.getText(),newYear.getText());
-                    for (Book i: Books){
-                        if (i.equals(x)){
-                            Books.remove(i);
-                            break;
-                        }
+                if (butGetAll.isSelected()){
+                    myTab.getItems().clear();
+                } else {
+                    Book selectedItem = myTab.getSelectionModel().getSelectedItem();
+                    if (selectedItem != null){
+                        myTab.getItems().remove(selectedItem);
                     }
-                    newLang.setText(null);
-                    newAut.setText(null);
-                    newYear.setText(null);
                 }
             }
         });
