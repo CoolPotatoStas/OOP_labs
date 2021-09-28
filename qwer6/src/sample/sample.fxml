@@ -16,6 +16,7 @@
           <Menu mnemonicParsing="false" text="File">
             <items>
               <MenuItem fx:id="butOpen" mnemonicParsing="false" text="Open..." />
+                  <MenuItem fx:id="butSave" mnemonicParsing="false" text="Save..." />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Edit">
@@ -32,7 +33,7 @@
       </MenuBar>
       <AnchorPane layoutX="477.0" layoutY="27.0" prefHeight="511.0" prefWidth="306.0" style="-fx-background-color: #6E663F;">
          <children>
-            <TableView fx:id="TabInfo" prefHeight="511.0" prefWidth="422.0">
+            <TableView fx:id="TabInfo" editable="true" prefHeight="511.0" prefWidth="422.0">
               <columns>
                   <TableColumn fx:id="idAtom" prefWidth="56.800048828125" text="Атом" />
                 <TableColumn fx:id="idX" prefWidth="64.79998779296875" text="X" />
@@ -45,7 +46,7 @@
       </AnchorPane>
       <AnchorPane fx:id="PaneForModels" layoutX="14.0" layoutY="37.0" prefHeight="491.0" prefWidth="452.0" style="-fx-background-color: #FFFFFF;">
          <children>
-            <SubScene fx:id="sub" height="491.0" width="452.0">
+            <SubScene fx:id="sub" focusTraversable="true" height="491.0" width="452.0">
               <root>
                 <Region />
               </root>

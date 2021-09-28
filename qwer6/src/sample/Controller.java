@@ -1,10 +1,15 @@
 package sample;
 
+//не меняет ячейки
+//добавить +- отодвинуть камеру
+
+//перспективе пришел пиздец
+
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -14,19 +19,23 @@ import java.util.regex.Pattern;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Shape3D;
 import javafx.scene.shape.Sphere;
 import javafx.stage.FileChooser;
+
+import javax.imageio.ImageIO;
 
 public class Controller {
 
@@ -38,6 +47,9 @@ public class Controller {
 
     @FXML
     private MenuItem butOpen;
+
+    @FXML
+    private MenuItem butSave;
 
     @FXML
     private TableView<Coordinate> TabInfo;
@@ -98,6 +110,26 @@ public class Controller {
         public ColorPicker getC() {
             return c;
         }
+
+        public void setAtom(String atom) {
+            this.atom = atom;
+        }
+
+        public void setX(Double x) {
+            this.x = x;
+        }
+
+        public void setY(Double y) {
+            this.y = y;
+        }
+
+        public void setZ(Double z) {
+            this.z = z;
+        }
+
+        public void setC(ColorPicker c) {
+            this.c = c;
+        }
     }
 
     public class AtomNColor{
@@ -131,7 +163,7 @@ public class Controller {
     private ArrayList<Coordinate> allAtoms = new ArrayList<>();
     private ObservableList<Coordinate> usMol = FXCollections.observableArrayList();
     private ArrayList<AtomNColor> nameOfAtoms = new ArrayList<>();
-    private ArrayList<Sphere> atoms;
+    private ArrayList<Sphere> atoms = new ArrayList<>();;
     private Group all3DObject = new Group();
 
     private void searchColor() {
@@ -201,7 +233,6 @@ public class Controller {
     }
 
     private void paint3DAtom() {
-        atoms = new ArrayList<>();
 
         int radius = 30;
         for (Coordinate c : allAtoms) {
@@ -211,14 +242,35 @@ public class Controller {
             sp.setTranslateY(c.y*100 + 100);
             sp.setTranslateZ(c.z*100 + 100);
             PhongMaterial material = new PhongMaterial();
-            material.setSpecularColor(Color.BLACK);
             Color col = c.c.getValue();
+            material.setSpecularColor(col);
             material.setDiffuseColor(col);
             sp.setMaterial(material);
             PaneForModels.getChildren().add(sp);
             all3DObject.getChildren().add(sp);
             atoms.add(sp);
         }
+
+       /* for (Sphere sp1: atoms){
+            for (Sphere sp2: atoms){ //- sp1.getTranslateZ()* sp2.getTranslateZ()
+                double len = Math.sqrt((sp2.getTranslateX()*sp2.getTranslateX() - sp1.getTranslateX()* sp2.getTranslateX())
+                        + (sp2.getTranslateY()*sp2.getTranslateY() - sp1.getTranslateY()* sp2.getTranslateY())
+                +(sp2.getTranslateZ()*sp2.getTranslateZ() ))
+                        - sp1.getRadius() - sp2.getRadius();
+                if (!sp1.equals(sp2) && len > 5 && len <= sp1.getRadius()){
+                    //Line l = new Line(sp1.getTranslateX(), sp1.getTranslateY(), sp2.getTranslateX(), sp2.getTranslateY());
+                    //l.setFill(Color.BLACK);
+                    Cylinder l = new Cylinder(5, len, 5);
+                    l.setMaterial(sp1.getMaterial());
+                    l.setTranslateX(sp1.getTranslateX()-(x/2));
+                    l.setTranslateY(sphere.getTranslateY()-(y/2));
+                    cyl.getTransforms().add(new Rotate(90+Math.toDegrees(Math.atan2(y, x)), 0, 0, 0, Rotate.Z_AXIS));
+                    PaneForModels.getChildren().add(l);
+                    all3DObject.getChildren().add(l);
+                    lines.add(l);
+                }
+            }
+        }*/
     }
 
     private void createGroup(){
@@ -229,29 +281,23 @@ public class Controller {
                 }
             }
         }
-        //
         for (Coordinate tmp: allAtoms){
             tmp.c.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
                     String name = tmp.atom;
                     Color color = tmp.c.getValue();
-                    //PaneForModels.getChildren().clear();
-                    //all3DObject.getChildren().clear();
                     for (int i = 0; i < allAtoms.size();i++ ){
                         if (allAtoms.get(i).atom.equals(name)) {
                             allAtoms.get(i).c.setValue(color);
                             PhongMaterial material = new PhongMaterial();
-                            material.setSpecularColor(Color.BLACK);
+                            material.setSpecularColor(color);
                             material.setDiffuseColor(color);
                             atoms.get(i).setMaterial(material);
                         }
                         PaneForModels.getChildren().add(atoms.get(i));
                         all3DObject.getChildren().add(atoms.get(i));
-                        //sub.setRoot(all3DObject);
-                        //sub.setCamera(camera);
                     }
-
                 }
             });
         }
@@ -261,6 +307,8 @@ public class Controller {
     @FXML
     void initialize() {
 
+        PaneForModels.getChildren().clear();
+        PaneForModels.getChildren().add(0, sub);
         sub.setRoot(all3DObject);
         camera = new PerspectiveCamera();
         sub.setCamera(camera);
@@ -274,6 +322,13 @@ public class Controller {
         butOpen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
+                allAtoms.clear();
+                usMol.clear();
+                nameOfAtoms.clear();
+                atoms.clear();
+                all3DObject.getChildren().clear();
+                TabInfo.getItems().clear();
+
                 FileChooser fileChooser = new FileChooser();
                 FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("TXT files (*.txt)", "*.txt");
                 fileChooser.getExtensionFilters().add(extFilter);
@@ -292,8 +347,7 @@ public class Controller {
                         }
                     }
 
-                    TabInfo.getItems().clear();
-                    TabInfo.setEditable(false);
+                    TabInfo.setEditable(true);
                     idAtom.setEditable(false);
                     idX.setEditable(true);
                     idY.setEditable(true);
@@ -306,32 +360,130 @@ public class Controller {
             }
         });
 
+        butSave.setOnAction(new EventHandler<ActionEvent>(){
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save Document");
+                FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png");//Расширение
+                fileChooser.getExtensionFilters().add(extFilter);
+                File file = fileChooser.showSaveDialog(Main.prim);
+                if (file != null) {
+                    try {
+                        WritableImage writableImage = new WritableImage(452, 491);
+                        PaneForModels.snapshot(null, writableImage);
+                        RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                        ImageIO.write(renderedImage, "png", file);
+                    } catch (IOException ex) {
+                        System.out.println("Ошибка");
+                    }
+                }
+            }
+        });
+
         ///////////////////////////////////////
 
-        all3DObject.addEventHandler(KeyEvent.KEY_PRESSED, event->{
-            System.out.println(1);
+        Main.prim.addEventHandler(KeyEvent.KEY_PRESSED, event->{
             switch (event.getCode()){
                 case W:
-                    camera.translateYProperty().set(camera.getTranslateY() + 50);
+                    camera.translateYProperty().set(camera.getTranslateY() + 20);
                     break;
                 case S:
-                    camera.translateYProperty().set(camera.getTranslateY()-50);
+                    camera.translateYProperty().set(camera.getTranslateY()-20);
                     break;
                 case A:
-                    camera.translateXProperty().set(camera.getTranslateX() - 50);
+                    camera.translateXProperty().set(camera.getTranslateX() + 20);
                     break;
                 case D:
-                    camera.translateXProperty().set(camera.getTranslateX() + 50);
+                    camera.translateXProperty().set(camera.getTranslateX() - 20);
                     break;
                 case Q:
-                    camera.translateZProperty().set(camera.getTranslateZ() - 50);
+                    camera.translateZProperty().set(camera.getTranslateZ() + 20);
                     break;
                 case E:
-                    camera.translateZProperty().set(camera.getTranslateZ() + 50);
+                    camera.translateZProperty().set(camera.getTranslateZ() - 20);
+                    break;
+                case G:
+                    //camera.setRotate(camera.getRotate() + 2);
+                    camera.setFieldOfView(camera.getFieldOfView() + 2);
+                    break;
+                case L:
+                    //camera.setRotate(camera.getRotate() - 2);
+                    camera.setFieldOfView(camera.getFieldOfView() - 2);
                     break;
             }
         });
 
+        ///////////////////////
 
+       //idX.setCellFactory(TextFieldTableCell.forTableColumn());
+        idX.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Coordinate, Double>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Coordinate, Double> t) {
+                        ((Coordinate) t.getTableView().getItems().get(t.getTablePosition().getRow())).setX(t.getNewValue());
+
+                        TablePosition firstCell = TabInfo.getSelectionModel().getSelectedCells().get(0);
+                        int i = firstCell.getRow();
+                        double tmp = allAtoms.get(i).getX();
+                        allAtoms.get(i).setX(t.getNewValue());
+                        Sphere sp = null;
+                        for(Sphere tm: atoms){
+                            if ((tm.getTranslateX()-100)/100 == tmp){
+                                sp = tm;
+                                break;
+                            }
+                        }
+
+                        sp.setTranslateX(t.getNewValue());
+                    }
+                }
+        );
+
+        idY.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Coordinate, Double>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Coordinate, Double> t) {
+                        ((Coordinate) t.getTableView().getItems().get(t.getTablePosition().getRow())).setY(t.getNewValue());
+
+                        TablePosition firstCell = TabInfo.getSelectionModel().getSelectedCells().get(0);
+                        int i = firstCell.getRow();
+                        double tmp = allAtoms.get(i).getY();
+                        allAtoms.get(i).setY(t.getNewValue());
+                        Sphere sp = null;
+                        for(Sphere tm: atoms){
+                            if ((tm.getTranslateY()-100)/100 == tmp){
+                                sp = tm;
+                                break;
+                            }
+                        }
+
+                        sp.setTranslateY(t.getNewValue());
+                    }
+                }
+        );
+
+        idZ.setOnEditCommit(
+                new EventHandler<TableColumn.CellEditEvent<Coordinate, Double>>() {
+                    @Override
+                    public void handle(TableColumn.CellEditEvent<Coordinate, Double> t) {
+                        ((Coordinate) t.getTableView().getItems().get(t.getTablePosition().getRow())).setZ(t.getNewValue());
+
+                        TablePosition firstCell = TabInfo.getSelectionModel().getSelectedCells().get(0);
+                        int i = firstCell.getRow();
+                        double tmp = allAtoms.get(i).getZ();
+                        allAtoms.get(i).setZ(t.getNewValue());
+                        Sphere sp = null;
+                        for(Sphere tm: atoms){
+                            if ((tm.getTranslateZ()-100)/100 == tmp){
+                                sp = tm;
+                                break;
+                            }
+                        }
+
+                        sp.setTranslateZ(t.getNewValue());
+                    }
+                }
+        );
     }
 }
